@@ -29,6 +29,6 @@ app.use((err, req, res, next) => {
     res.status(500);
     res.send("網頁發生問題，請稍後再試");
 });
-app.listen(port, () => {
-    console.log(`伺服器已經啟動於http://localhost:${port}`);
+app.listen(process.env.PORT || port, () => {
+    console.log(`伺服器已經啟動`);
 });

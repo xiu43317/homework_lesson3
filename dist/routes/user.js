@@ -14,8 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const posts_1 = __importDefault(require("../models/posts"));
-const handleSuccess_1 = __importDefault(require("../handleSuccess"));
-const handleError_1 = __importDefault(require("../handleError"));
+const handleSuccess_1 = __importDefault(require("../eventHandler/handleSuccess"));
+const handleError_1 = __importDefault(require("../eventHandler/handleError"));
 const router = express_1.default.Router();
 router.get('/posts', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const post = yield posts_1.default.find();
@@ -62,11 +62,20 @@ router.delete('/posts', (req, res) => __awaiter(void 0, void 0, void 0, function
 router.patch('/posts/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     try {
-        yield posts_1.default.findByIdAndDelete(id);
-        const message = {
-            delete: "yes"
-        };
-        (0, handleSuccess_1.default)(res, message);
+        const data = req.body;
+        console.log(data);
+        if (data.content !== undefined) {
+            const updatePost = yield posts_1.default.findByIdAndUpdate(id, {
+                name: data.name,
+                content: data.content,
+            }, {
+                runValidators: true
+            });
+            (0, handleSuccess_1.default)(res, updatePost);
+        }
+        else {
+            (0, handleError_1.default)(res, null);
+        }
     }
     catch (error) {
         (0, handleError_1.default)(res, error);

@@ -52,15 +52,24 @@ router.delete('/posts',async(req,res)=>{
 
 router.patch('/posts/:id',async(req,res)=>{
     const id:string = req.params.id
-    try{
-        await Post.findByIdAndDelete(id);
-        const message =
-          {
-            delete: "yes"
-          }
-          handleSuccess(res,message)
-      }catch(error){
-        handleError(res,error)
+    try {
+      const data = req.body
+      console.log(data)
+      if (data.content !== undefined) {
+        const updatePost = await Post.findByIdAndUpdate(id,{
+          name: data.name,
+          content: data.content,
+        },
+        {
+          runValidators: true
+        }
+      );
+        handleSuccess(res,updatePost)
+      } else {
+        handleError(res,null)
       }
+    } catch (error) {
+        handleError(res,error)
+    }
 })
 export default router
